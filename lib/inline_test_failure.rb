@@ -3,7 +3,7 @@ class InlineTestFailure < StandardError
 
   def initialize(test_type=nil, lhs=nil, rhs=nil, description=nil)
     super [
-      "#{description} FAILED:",
+      "   #{description} FAILED:",
       "      test_type: #{test_type}",
       "      lhs: #{lhs}",
       "      rhs: #{rhs}"

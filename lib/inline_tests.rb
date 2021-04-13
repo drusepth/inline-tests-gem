@@ -63,7 +63,13 @@ class InlineTests
     puts "  #{test_fails} FAILS"
     puts
     puts "#{METHODS_THAT_NEED_TESTS.count} methods still need tests:"
-    METHODS_THAT_NEED_TESTS.each {|method| puts "  #{method.inspect}"}
+    METHODS_THAT_NEED_TESTS.each do |method|
+      puts "  #{method.receiver.name}##{method.original_name}"
+      puts "    #{method.source_location.join(':')}"
+    end
+
+    # Intentionally return nil so we don't re-output what we just printed as a return value
+    nil
   end
 
   private
