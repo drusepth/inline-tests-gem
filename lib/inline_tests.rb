@@ -8,6 +8,15 @@ class InlineTests
     test_passes = 0
     test_fails  = 0
 
+    # If we're a gem in a library like Rails that loads models on demand,
+    # we need to make sure all the models are loaded before running any tests,
+    # because it's the loading of the models that registers each method's tests.
+    begin
+      Rails.application.eager_load!
+    rescue
+      # TODO: handle/display any Railsy errors here
+    end
+
     puts "Starting inline test suite:"
     all_tests_start_time = Time.now
     METHODS_WITH_INLINE_TESTS.each do |method|
