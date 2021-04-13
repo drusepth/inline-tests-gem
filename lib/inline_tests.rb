@@ -61,6 +61,9 @@ class InlineTests
     puts "#{METHODS_WITH_INLINE_TESTS.count} inline tests ran in #{format_tiny_time all_tests_end_time - all_tests_start_time} seconds."
     puts "  #{test_passes} PASSED"
     puts "  #{test_fails} FAILS"
+    puts
+    puts "#{METHODS_THAT_NEED_TESTS.count} methods still need tests:"
+    METHODS_THAT_NEED_TESTS.each {|method| puts "  #{method.inspect}"}
   end
 
   private

@@ -1,38 +1,13 @@
 module Kernel
   METHODS_WITH_INLINE_TESTS     = []
+  METHODS_THAT_NEED_TESTS       = []
 
   RUN_TESTS_IN_THIS_ENVIRONMENT = true
 
   def tested(method_name, _ignored, &inline_test_block)
     return unless RUN_TESTS_IN_THIS_ENVIRONMENT
 
-    # Hoist the method variable outside of the block below so we can access it afterwards
-    method = nil
-
-    # The method definition exists in a different scope dependent on whether we're in a class or not.
-    if self.class.name === Object.name
-      # We're in `main` scope
-      method = method(method_name)
-      
-    elsif self.class.name == Class.name
-      # We're in a class -- hunt for that method
-
-      if instance_methods.include?(method_name)
-        method = self.instance_method(method_name)
-
-        # Since the method is defined at script startup, it's an UnboundMethod until there's an instance to
-        # call it on. Obviously, need an instance to call it from during a test anyway, so we bind one here
-        # manually.
-        # TODO: this would be a great place to read defaults for some classes and apply attributes/defaults
-        #       upon creation
-        instance = self.new
-        method   = method.bind(instance)
-
-      elsif self.singleton_class.instance_methods.include?(method_name)
-        method = self.singleton_class.instance_method(method_name).bind(self)
-
-      end
-    end
+    method = method_ref(method_name)
 
     # Register the method's tests to be run with InlineTests
     method.inline_tests = inline_test_block
@@ -43,7 +18,10 @@ module Kernel
   def tests; end
 
   # This is just syntax sugar for decorating methods that are untested / need tests
-  def untested(method_name); end
+  def untested(method_name)
+    method = method_ref(method_name)
+    METHODS_THAT_NEED_TESTS.push method
+  end
 
   def assert(some_statement, description = '')
     passed = !!some_statement
@@ -95,6 +73,33 @@ module Kernel
   module NaN;      def to_s; 0 * Float::INFINITY; end; end
 
   private
+
+  def method_ref(method_name)
+    # The method definition exists in a different scope dependent on whether we're in a class or not.
+    if self.class.name === Object.name
+      # We're in `main` scope
+      method(method_name)
+      
+    elsif self.class.name == Class.name
+      # We're in a class -- hunt for that method
+
+      if instance_methods.include?(method_name)
+        method = self.instance_method(method_name)
+
+        # Since the method is defined at script startup, it's an UnboundMethod until there's an instance to
+        # call it on. Obviously, need an instance to call it from during a test anyway, so we bind one here
+        # manually.
+        # TODO: this would be a great place to read defaults for some classes and apply attributes/defaults
+        #       upon creation
+        instance = self.new
+        method.bind(instance)
+
+      elsif self.singleton_class.instance_methods.include?(method_name)
+        self.singleton_class.instance_method(method_name).bind(self)
+
+      end
+    end
+  end
 
   def flexible_assert(lhs, rhs, assert_logic)
     lhs_values = lhs
