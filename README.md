@@ -40,19 +40,18 @@ end
 
 ## Fuzzy testing
 
-This library also supports fuzzy testing. To use it, define a tests block variable (e.g. `this` below) and
-pass a _range_ for any parameter using square brackets (`[` `]`) instead of parentheses. Square brackets can also 
-be used with non-range values. Every combination in every range will be tested; the condition must be true for every
-permutation in order for the test to pass.
+This library also supports fuzzy testing. To use it, use the `fuzz` keyword with square brackets as if they were
+parentheses. Square brackets can also be used with non-range values. Every combination in every range will be tested; 
+the condition must be true for every permutation in order for the test to pass.
 
 For example,
 ```ruby
 tested def add x, y
   x + y
 end,
-tests do |this|
-  assert_greater_than this[0, (1..1_000)], 0, 'adding anything to zero should be greater than zero'
-  assert_equal        this[0, 0],          0, '0 + 0 = 0'
+tests do
+  assert_greater_than fuzz[0, (1..1_000)], 0, 'adding anything to zero should be greater than zero'
+  assert_equal        fuzz[0, 0],          0, '0 + 0 = 0'
 end
 ```
 
@@ -60,8 +59,8 @@ end
 tested def multiply x, y
   x * y
 end,
-tests do |this|
-  assert_greater_than this[(-100..-1), (-100..-1)], 0, 'multiplying any two negatives should yield a positive'
+tests do
+  assert_greater_than fuzz[(-100..-1), (-100..-1)], 0, 'multiplying any two negatives should yield a positive'
 end
 ```
 

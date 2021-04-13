@@ -1,5 +1,7 @@
 # The methods in this class are available whenever you're in a tests do ... end block.
 class TestHelper
+  attr_accessor :method, :fuzz # The method being tested
+
   def assert(some_statement, description = '')
     passed = !!some_statement
     raise InlineTestFailure.new('assert', some_statement, nil, description) unless passed

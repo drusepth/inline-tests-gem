@@ -28,7 +28,10 @@ class Method
     # all of those methods) and run each block of inline texts within that TestHelper's context,
     # meaning they can use assert(true) in their test blocks anywhere without having to litter
     # Kernel with global methods OR require people to do something like TestHelper::assert(true).
+
     testhelper = TestHelper.new
+    testhelper.method = self
+    testhelper.fuzz = self
     testhelper.instance_exec(&inline_tests) if inline_tests && inline_tests.respond_to?(:call)
   end
 
