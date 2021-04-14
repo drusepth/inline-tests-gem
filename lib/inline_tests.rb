@@ -37,8 +37,6 @@ class InlineTests
 
       start_time  = Time.now
       begin
-        # TODO: it'd actually be great if we could bind #run_inline_tests to some context where all our
-        #       asserts/testing stuff is defined so we don't have to clutter up the global Kernel namespace
         method.run_inline_tests # Throws an exception on fail
         test_time    = Time.now - start_time
         test_passes += 1

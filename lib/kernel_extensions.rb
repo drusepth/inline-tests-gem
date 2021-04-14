@@ -17,7 +17,6 @@ module Kernel
   end
   def tests; end
 
-  # This is just syntax sugar for decorating methods that are untested / need tests
   def untested(method_name)
     method = method_ref(method_name)
     METHODS_THAT_NEED_TESTS.push method
